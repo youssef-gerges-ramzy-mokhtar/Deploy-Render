@@ -4,6 +4,7 @@ const cors = require('cors')
 const app = express()
 app.use(express.json());
 app.use(cors())
+app.use(express.static('dist'))
 
 let notes = [
     {
@@ -67,6 +68,16 @@ app.post("/api/notes", (req, res) => {
     
     notes = notes.concat(note);
     res.json(note);
+})
+
+app.put("/api/notes/:id", (req, res) => {
+    const newNote = req.body;
+
+    if (!newNote.content && !newNote.important)
+        return res.status(400).json({error: "content missing"});
+
+    notes = notes.map(note => note.id !== newNote.id ? note : newNote);
+    res.json(newNote);
 })
 
 const PORT = process.env.PORT || 3001
